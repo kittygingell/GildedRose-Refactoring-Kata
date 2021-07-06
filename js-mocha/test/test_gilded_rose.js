@@ -56,5 +56,11 @@ describe("Gilded Rose", function() {
     expect(items[0].quality).to.equal(0);
   });
 
+  it("Conjured item", function() {
+    const gildedRose = new Shop([new Item("Conjured Mana Cake", 6, 5)]);
+    const items = gildedRose.updateQuality();
+    expect(items[0].quality).to.equal(3);
+  });
+
 
 });
