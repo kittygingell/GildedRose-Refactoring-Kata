@@ -11,7 +11,7 @@ class Shop {
         this.items = items;
     }
 
-    static conjured(item) {
+    static isConjured(item) {
         return item.name.includes('Conjured');
     }
 
@@ -19,14 +19,14 @@ class Shop {
         return item.name !== 'Sulfuras, Hand of Ragnaros';
     }
 
-    static increaseRequired(item) {
+    static isIncreaseRequired(item) {
         return (item.name === 'Aged Brie') || (item.name === 'Backstage passes to a TAFKAL80ETC concert');
     }
 
-    static decrease(item) {
+    static decreaseQuality(item) {
         let quality = item.quality;
         if (quality > 0) {
-            if (Shop.conjured(item) || item.sellIn <= 0) {
+            if (Shop.isConjured(item) || item.sellIn <= 0) {
                 quality = Math.max(0, (quality - 2));
             } else {
                 quality--;
@@ -35,17 +35,18 @@ class Shop {
         return quality;
     }
 
-    static increase(item) {
+    static increaseQuality(item) {
         let quality = item.quality;
-        if (quality < 50) {
+      const maxQuality = 50;
+      const fiveDayThreshold = 5;
+      const tenDayThreshold = 10;
+      if (quality < maxQuality) {
             quality++;
-            if (item.name === 'Aged Brie') {
-                if (item.sellIn < 0 && quality < 50) quality++;
-            } else if (item.name === 'Backstage passes to a TAFKAL80ETC concert') {
-                if (item.sellIn <= 10 && quality < 50) {
+              if (item.name === 'Backstage passes to a TAFKAL80ETC concert') {
+              if (item.sellIn <= tenDayThreshold && quality < maxQuality) {
                     quality++;
                 }
-                if (item.sellIn <= 5 && quality < 50) {
+              if (item.sellIn <= fiveDayThreshold && quality < maxQuality) {
                     quality++;
                 }
                 if (item.sellIn <= 0) {
@@ -60,10 +61,10 @@ class Shop {
     updateQuality() {
         this.items.forEach(item => {
             if (Shop.hasSellBy(item)) {
-                if (Shop.increaseRequired(item)) {
-                    item.quality = Shop.increase(item);
+                if (Shop.isIncreaseRequired(item)) {
+                    item.quality = Shop.increaseQuality(item);
                 } else {
-                    item.quality = Shop.decrease(item);
+                    item.quality = Shop.decreaseQuality(item);
                 }
                 item.sellIn = item.sellIn - 1;
             }
